@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Campus Navigator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVRtgrMAVu1VAU4WwhiEfTusyw4GuNcyQ"></script>
+</head>
+<body>
+  <img id="collegeBanner" src="college.jpg" alt="College Poster" />
+  <div id="overlay">
+    <h2>MIT Muzaffarpur Campus</h2>
+    <p>Click anywhere to explore the map</p>
+  </div>
+
+  <div class="top-bar">
+    <h1>Campus Navigator</h1>
+    <button id="qrBtn">Scan QR (UI)</button>
+  </div>
+
+  <div class="controls">
+    <select id="locationSelect">
+      <option value="">Select a location</option>
+    </select>
+    <div class="filters">
+      <label><input type="checkbox" class="filter-checkbox" value="academic" checked /> Academic</label>
+      <label><input type="checkbox" class="filter-checkbox" value="hostel" checked /> Hostel</label>
+      <label><input type="checkbox" class="filter-checkbox" value="admin" checked /> Admin</label>
+      <label><input type="checkbox" class="filter-checkbox" value="sports" checked /> Sports</label>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="geminiContainer">
+    <textarea id="geminiInput" placeholder="Ask about campus... (e.g., where is cafeteria?)"></textarea>
+    <button onclick="askGemini()">Ask AI</button>
+    <div id="geminiResponse"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
