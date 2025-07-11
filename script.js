@@ -134,48 +134,53 @@ function initMap() {
 window.onload = initMap;
 
 async function askGemini() {
-  const input = document.getElementById("geminiInput").value;
+  const inputElem = document.getElementById("geminiInput");
   const responseDiv = document.getElementById("geminiResponse");
+  const userMessage = inputElem.value.trim();
 
-  if (!input.trim()) {
-    responseDiv.textContent = "Please enter a question.";
+  if (!userMessage) {
+    responseDiv.innerHTML += `<div style="color: red;">Please enter a question.</div>`;
     return;
   }
 
-  if (GEMINI_API_KEY === "YOUR_GEMINI_API_KEY") {
-    responseDiv.textContent = "Please set your Gemini API key in script.js.";
-    return;
-  }
-
-  responseDiv.textContent = "Thinking...";
+  inputElem.value = "";
+  responseDiv.innerHTML += `<div style="margin-bottom: 10px;"><strong>You:</strong> ${userMessage}</div>`;
+  responseDiv.innerHTML += `<div id="typing" style="color: gray; font-style: italic;">Thinking...</div>`;
+  responseDiv.scrollTop = responseDiv.scrollHeight;
 
   try {
     const shortLocations = Object.keys(locations).map(name => `- ${name}`).join("\n");
 
-    const fullPrompt = `
-You are a helpful campus guide for MIT Muzaffarpur.
-Here are the campus locations:
+    const prompt = `
+You are a helpful campus assistant for students at MIT Muzaffarpur.
+Campus is located in Bihar, India.
+
+You're aware of key places like:
 ${shortLocations}
 
-Answer the following question:
-"${input}"
+Be friendly, concise, and useful. Answer this:
+"${userMessage}"
 `;
 
-    const response = await fetch(
+    const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }]
+          contents: [{ parts: [{ text: prompt }] }]
         })
       }
     );
 
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini didn't return a response.";
-    responseDiv.textContent = text;
-  } catch (error) {
-    responseDiv.textContent = "Error: " + error.message;
+    const data = await res.json();
+    const geminiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't find an answer.";
+
+    document.getElementById("typing").remove();
+    responseDiv.innerHTML += `<div style="margin-bottom: 15px; color: #222;"><strong>Gemini:</strong> ${geminiReply}</div>`;
+    responseDiv.scrollTop = responseDiv.scrollHeight;
+  } catch (err) {
+    document.getElementById("typing").remove();
+    responseDiv.innerHTML += `<div style="color: red;">Error: ${err.message}</div>`;
   }
 }
